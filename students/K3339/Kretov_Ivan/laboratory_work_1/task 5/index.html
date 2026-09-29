@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Журнал оценок</title>
+</head>
+<body>
+    <h1>Журнал оценок</h1>
+    <table>
+        <tr><th>Дисциплина</th><th>Оценки</th></tr>
+        {{ROWS}}
+    </table>
+
+    <h2>Добавить оценку</h2>
+    <form method="POST" action="/submit">
+        <label>
+            Дисциплина:
+            <input name="subject" required>
+        </label>
+        <label>
+            Оценка:
+            <input name="grade" type="number" min="1" max="5" required>
+        </label>
+        <button type="submit">Добавить</button>
+    </form>
+</body>
+</html>
