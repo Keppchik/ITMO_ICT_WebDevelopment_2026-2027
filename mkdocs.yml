@@ -1,0 +1,15 @@
+site_name: Веб-программирование. Кретов Иван. K3339
+
+theme:
+  name: material
+  language: ru
+
+markdown_extensions:
+  - pymdownx.details
+  - pymdownx.superfences
+  - admonition
+
+nav:
+  - Главная: index.md
+  - ЛР1:
+      - Отчёт: lr1/report.md
