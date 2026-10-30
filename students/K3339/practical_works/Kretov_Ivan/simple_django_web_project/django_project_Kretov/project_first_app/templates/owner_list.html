@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Владельцы</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 30px; }
+        .card {
+            max-width: 600px; margin: 0 auto; background: #fff;
+            border-radius: 8px; padding: 25px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 { margin: 0 0 20px; font-size: 22px; color: #333; }
+        .btn {
+            display: inline-block; padding: 8px 16px; border-radius: 6px;
+            font-size: 14px; text-decoration: none; margin-bottom: 15px;
+        }
+        .btn-save { background: #667eea; color: #fff; }
+        .btn:hover { opacity: 0.9; }
+        .owner {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; background: #f9f9f9; border-left: 3px solid #667eea;
+            border-radius: 4px; margin-bottom: 8px; text-decoration: none; color: #222;
+        }
+        .owner:hover { background: #eef0fd; }
+        .owner strong { font-size: 15px; }
+        .owner small { color: #888; display: block; margin-top: 3px; }
+        .arrow { color: #667eea; font-size: 18px; }
+        .empty { color: #999; font-style: italic; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Владельцы ({{ owners|length }})</h1>
+
+        <a class="btn btn-save" href="{% url 'owner_create' %}">+ Добавить владельца</a>
+
+        {% for o in owners %}
+            <a class="owner" href="{% url 'owner_detail' o.id %}">
+                <div>
+                    <strong>{{ o.last_name }} {{ o.first_name }}</strong>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+        {% empty %}
+            <div class="empty">Владельцев пока нет</div>
+        {% endfor %}
+    </div>
+</body>
+</html>
