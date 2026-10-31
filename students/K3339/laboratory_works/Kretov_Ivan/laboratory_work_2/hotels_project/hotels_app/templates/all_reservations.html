@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Все бронирования</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h1 { margin: 0; font-size: 26px; color: #1f2937; }
+
+        .btn-home {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #eee;
+            color: #333;
+            border-radius: 8px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .btn-home:hover { background: #e0e0e0; }
+
+        .alert {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .reservation {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            padding: 18px 22px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .reservation .main { flex: 1; min-width: 220px; }
+
+        .reservation h2 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            color: #1f2937;
+        }
+
+        .reservation .sub {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .reservation .guest {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .reservation .price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #667eea;
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .status {
+            display: inline-block;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .status-pending    { background: #fef3c7; color: #92400e; }
+        .status-confirmed  { background: #dbeafe; color: #1e40af; }
+        .status-checked_in { background: #dcfce7; color: #166534; }
+        .status-checked_out{ background: #e5e7eb; color: #374151; }
+        .status-cancelled  { background: #fee2e2; color: #991b1b; }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            min-width: 180px;
+        }
+
+        .actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-link { background: none; color: #667eea; padding: 0; }
+        .btn-link:hover { text-decoration: underline; }
+
+        .btn-confirm    { background: #dbeafe; color: #1e40af; }
+        .btn-confirm:hover { background: #bfdbfe; }
+
+        .btn-checkin    { background: #dcfce7; color: #166534; }
+        .btn-checkin:hover { background: #bbf7d0; }
+
+        .btn-checkout   { background: #e5e7eb; color: #374151; }
+        .btn-checkout:hover { background: #d1d5db; }
+
+        .btn-cancel     { background: #fee2e2; color: #991b1b; }
+        .btn-cancel:hover { background: #fecaca; }
+
+        .empty {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Все бронирования ({{ reservations|length }})</h1>
+            <a class="btn-home" href="{% url 'home' %}">← На главную</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% for r in reservations %}
+            <div class="reservation">
+                <div class="main">
+                    <h2>
+                        {{ r.room.room_type.hotel.name }} · {{ r.room.room_type.name }} — №{{ r.room.number }}
+                    </h2>
+                    <div class="sub">
+                        {{ r.date_from|date:"d.m.Y" }} — {{ r.date_to|date:"d.m.Y" }}
+                        · {{ r.guests_count }} гост.
+                    </div>
+                    <div class="guest">
+                        Гость:
+                        {% if r.guest.first_name or r.guest.last_name %}
+                            {{ r.guest.first_name }} {{ r.guest.last_name }}
+                        {% else %}
+                            {{ r.guest.email }}
+                        {% endif %}
+                    </div>
+                    <span class="status status-{{ r.status }}">{{ r.get_status_display }}</span>
+                    <div class="price">{{ r.total_price }} ₽</div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-link" href="{% url 'hotel_detail' r.room.room_type.hotel.pk %}">
+                        К отелю
+                    </a>
+
+                    {% if user.is_staff %}
+                        <div class="actions-row">
+                            {% if r.status == 'pending' %}
+                                <form method="post" action="{% url 'reservation_set_status' r.pk 'confirmed' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-confirm">Подтвердить</button>
+                                </form>
+                                <form method="post" action="{% url 'reservation_set_status' r.pk 'cancelled' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-cancel"
+                                            onclick="return confirm('Отменить бронирование?');">Отменить</button>
+                                </form>
+                            {% elif r.status == 'confirmed' %}
+                                <form method="post" action="{% url 'reservation_set_status' r.pk 'checked_in' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-checkin">Заселить</button>
+                                </form>
+                                <form method="post" action="{% url 'reservation_set_status' r.pk 'cancelled' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-cancel"
+                                            onclick="return confirm('Отменить бронирование?');">Отменить</button>
+                                </form>
+                            {% elif r.status == 'checked_in' %}
+                                <form method="post" action="{% url 'reservation_set_status' r.pk 'checked_out' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-checkout">Выселить</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty">Бронирований пока нет</div>
+        {% endfor %}
+    </div>
+</body>
+</html>

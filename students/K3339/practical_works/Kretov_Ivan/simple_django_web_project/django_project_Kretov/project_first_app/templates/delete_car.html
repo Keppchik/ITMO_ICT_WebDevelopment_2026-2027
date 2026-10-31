@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Удаление — {{ car.brand }} {{ car.model }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 30px; }
+        .card {
+            max-width: 600px; margin: 0 auto; background: #fff;
+            border-radius: 8px; padding: 25px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 { margin: 0 0 10px; font-size: 22px; color: #333; }
+        .subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
+        .car-info {
+            background: #f9f9f9; border-left: 3px solid #d32f2f;
+            padding: 12px 14px; border-radius: 4px; margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .actions { display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .btn-delete { background: #d32f2f; color: #fff; }
+        .btn-back { background: #eee; color: #333; }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Удалить автомобиль?</h1>
+        <div class="subtitle">Это действие нельзя отменить.</div>
+
+        <div class="car-info">
+            <strong>{{ car.brand }} {{ car.model }}</strong><br>
+            Гос. номер: {{ car.gos_number }}<br>
+            Цвет: {{ car.color }}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-delete">Да, удалить</button>
+                <a class="btn btn-back" href="{% url 'car_detail' car.pk %}">Отмена</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Автомобили</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 30px; }
+        .card {
+            max-width: 600px; margin: 0 auto; background: #fff;
+            border-radius: 8px; padding: 25px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 { margin: 0 0 20px; font-size: 22px; color: #333; }
+        .btn {
+            display: inline-block; padding: 8px 16px; border-radius: 6px;
+            font-size: 14px; text-decoration: none; margin-bottom: 15px;
+        }
+        .btn-save { background: #667eea; color: #fff; }
+        .btn-back { background: #eee; color: #333; margin-top: 15px; margin-bottom: 0; }
+        .btn:hover { opacity: 0.9; }
+        .car {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; background: #f9f9f9; border-left: 3px solid #667eea;
+            border-radius: 4px; margin-bottom: 8px; text-decoration: none; color: #222;
+        }
+        .car:hover { background: #eef0fd; }
+        .car strong { font-size: 15px; }
+        .car small { color: #888; display: block; margin-top: 3px; }
+        .plate { font-family: monospace; background: #333; color: #fff;
+                 padding: 3px 8px; border-radius: 4px; font-size: 13px; }
+        .empty { color: #999; font-style: italic; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Автомобили ({{ object_list|length }})</h1>
+
+        <a class="btn btn-save" href="{% url 'car_create' %}">+ Добавить автомобиль</a>
+
+        {% for car in object_list %}
+            <a class="car" href="{% url 'car_detail' car.pk %}">
+                <div>
+                    <strong>{{ car.brand }} {{ car.model }}</strong>
+                    <small>Цвет: {{ car.color }}</small>
+                </div>
+                <span class="plate">{{ car.gos_number }}</span>
+            </a>
+        {% empty %}
+            <div class="empty">Автомобилей пока нет</div>
+        {% endfor %}
+    </div>
+</body>
+</html>

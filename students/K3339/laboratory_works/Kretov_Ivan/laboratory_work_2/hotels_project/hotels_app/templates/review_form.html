@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отзыв — {{ hotel.name }}</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px 36px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 { margin: 0 0 6px; font-size: 22px; color: #1f2937; }
+        .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
+
+        .stay-info {
+            background: #f9fafb;
+            border-left: 3px solid #667eea;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 20px;
+        }
+
+        .field { margin-bottom: 16px; }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .form-input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .errorlist {
+            color: #dc2626;
+            font-size: 12px;
+            margin: 4px 0 0;
+            padding-left: 16px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: #667eea; color: #fff; }
+        .btn-primary:hover { background: #5568d3; }
+
+        .btn-secondary { background: #eee; color: #333; }
+        .btn-secondary:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Оставить отзыв</h1>
+        <div class="subtitle">{{ hotel.name }}</div>
+
+        {% if form.non_field_errors %}
+            <div class="alert-error">
+                {{ form.non_field_errors|join:", " }}
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.stay.field.queryset.count == 1 %}
+                <div class="stay-info">
+                    Проживание:
+                    {% with s=form.stay.field.queryset.first %}
+                        {{ s.room.room_type.name }} №{{ s.room.number }}:
+                        {{ s.checked_in_at|date:"d.m.Y" }}
+                        {% if s.checked_out_at %}— {{ s.checked_out_at|date:"d.m.Y" }}{% endif %}
+                    {% endwith %}
+                </div>
+                {{ form.stay.as_hidden }}
+            {% else %}
+                <div class="field">
+                    <label for="{{ form.stay.id_for_label }}">Проживание</label>
+                    {{ form.stay }}
+                    {% if form.stay.errors %}
+                        <ul class="errorlist">
+                            {% for e in form.stay.errors %}<li>{{ e }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="field">
+                <label for="{{ form.rating.id_for_label }}">Оценка (1–10)</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.rating.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.text.id_for_label }}">Текст отзыва</label>
+                {{ form.text }}
+                {% if form.text.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.text.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Отправить</button>
+                <a href="{% url 'hotel_detail' hotel.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
