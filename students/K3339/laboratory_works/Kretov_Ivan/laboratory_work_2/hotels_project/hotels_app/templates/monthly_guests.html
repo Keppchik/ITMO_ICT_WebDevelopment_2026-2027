@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Постояльцы за месяц</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #eee;
+            color: #333;
+            border-radius: 8px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-home:hover { background: #e0e0e0; }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #eef0f4;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            color: #1f2937;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .guest-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .guest-email {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .hotel-name {
+            font-weight: 500;
+        }
+
+        .room-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .status {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .status-active   { background: #dcfce7; color: #166534; }
+        .status-finished { background: #e5e7eb; color: #374151; }
+
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            table { font-size: 13px; }
+            th, td { padding: 10px 12px; }
+            .hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>Постояльцы за месяц</h1>
+                <div class="subtitle">
+                    Период: {{ month_ago|date:"d.m.Y" }} — {{ today|date:"d.m.Y" }}
+                    · Найдено: {{ stays|length }}
+                </div>
+            </div>
+            <a class="btn-home" href="{% url 'home' %}">← На главную</a>
+        </div>
+
+        <div class="card">
+            {% if stays %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Гость</th>
+                            <th>Отель</th>
+                            <th class="hide-mobile">Номер</th>
+                            <th>Заезд</th>
+                            <th>Выезд</th>
+                            <th class="hide-mobile">Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stay in stays %}
+                            <tr>
+                                <td>
+                                    <div class="guest-name">
+                                        {% if stay.guest.first_name or stay.guest.last_name %}
+                                            {{ stay.guest.first_name }} {{ stay.guest.last_name }}
+                                        {% else %}
+                                            {{ stay.guest.email }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="guest-email">{{ stay.guest.email }}</div>
+                                </td>
+                                <td>
+                                    <div class="hotel-name">{{ stay.room.room_type.hotel.name }}</div>
+                                    <div class="room-info">{{ stay.room.room_type.hotel.city }}</div>
+                                </td>
+                                <td class="hide-mobile">
+                                    <div class="hotel-name">{{ stay.room.room_type.name }}</div>
+                                    <div class="room-info">№{{ stay.room.number }}</div>
+                                </td>
+                                <td>{{ stay.checked_in_at|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if stay.checked_out_at %}
+                                        {{ stay.checked_out_at|date:"d.m.Y" }}
+                                    {% else %}
+                                        <span style="color: #9ca3af; font-style: italic;">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="hide-mobile">
+                                    {% if stay.checked_out_at %}
+                                        <span class="status status-finished">Завершено</span>
+                                    {% else %}
+                                        <span class="status status-active">Проживает</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">За последние 30 дней постояльцев не было</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

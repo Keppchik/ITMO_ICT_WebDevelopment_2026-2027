@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Бронирование — {{ room_type.name }}</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .room-photo {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #e5e7eb;
+            display: block;
+        }
+
+        .head {
+            padding: 22px 30px 18px;
+            border-bottom: 1px solid #eef0f4;
+        }
+
+        .hotel-link {
+            font-size: 13px;
+            color: #667eea;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .hotel-link:hover { text-decoration: underline; }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 22px;
+            color: #1f2937;
+        }
+
+        .sub {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        form { padding: 22px 30px 28px; }
+
+        .field { margin-bottom: 16px; }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .errorlist {
+            color: #dc2626;
+            font-size: 12px;
+            margin: 4px 0 0;
+            padding-left: 16px;
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .summary {
+            background: #f9fafb;
+            border: 1px solid #eef0f4;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 18px 0;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .summary .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .summary .total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #eef0f4;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary { background: #667eea; color: #fff; }
+        .btn-primary:hover { background: #5568d3; }
+
+        .btn-secondary { background: #eee; color: #333; }
+        .btn-secondary:hover { background: #e0e0e0; }
+
+        @media (max-width: 700px) {
+            .head, form { padding-left: 20px; padding-right: 20px; }
+            h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if room_type.photo %}
+            <img class="room-photo" src="{{ room_type.photo.url }}" alt="{{ room_type.name }}">
+        {% endif %}
+
+        <div class="head">
+            <a href="{% url 'hotel_detail' hotel.pk %}" class="hotel-link">← {{ hotel.name }}</a>
+            <h1>{{ room_type.name }}</h1>
+            <div class="sub">
+                До {{ room_type.capacity }} гостей · {{ room_type.price }} ₽ / ночь
+            </div>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {{ form.non_field_errors|join:", " }}
+                </div>
+            {% endif %}
+
+            <div class="field">
+                <label for="{{ form.date_from.id_for_label }}">Дата заезда</label>
+                {{ form.date_from }}
+                {% if form.date_from.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.date_from.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.date_to.id_for_label }}">Дата выезда</label>
+                {{ form.date_to }}
+                {% if form.date_to.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.date_to.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.guests_count.id_for_label }}">Количество гостей</label>
+                {{ form.guests_count }}
+                {% if form.guests_count.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.guests_count.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.comments.id_for_label }}">Комментарий</label>
+                {{ form.comments }}
+                {% if form.comments.errors %}
+                    <ul class="errorlist">
+                        {% for e in form.comments.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="summary" id="summaryBox" style="display:none;">
+                <div class="row"><span>Цена за ночь</span><span>{{ room_type.price }} ₽</span></div>
+                <div class="row"><span>Ночей</span><span id="nightsOut">—</span></div>
+                <div class="row total"><span>Итого</span><span id="totalOut">—</span></div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Забронировать</button>
+                <a href="{% url 'hotel_detail' hotel.pk %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const fromInput = document.getElementById('{{ form.date_from.id_for_label }}');
+            const toInput = document.getElementById('{{ form.date_to.id_for_label }}');
+            const nightsOut = document.getElementById('nightsOut');
+            const totalOut = document.getElementById('totalOut');
+            const summaryBox = document.getElementById('summaryBox');
+            const pricePerNight = parseFloat('{{ room_type.price }}');
+
+            function recalc() {
+                const from = fromInput.value;
+                const to = toInput.value;
+
+                if (!from || !to) {
+                    summaryBox.style.display = 'none';
+                    return;
+                }
+
+                const d1 = new Date(from);
+                const d2 = new Date(to);
+                const nights = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+
+                if (nights > 0) {
+                    summaryBox.style.display = 'block';
+                    nightsOut.textContent = nights;
+                    totalOut.textContent = (nights * pricePerNight).toFixed(2) + ' ₽';
+                } else {
+                    summaryBox.style.display = 'none';
+                }
+            }
+
+            fromInput.addEventListener('change', recalc);
+            toInput.addEventListener('change', recalc);
+            recalc();
+        })();
+    </script>
+</body>
+</html>

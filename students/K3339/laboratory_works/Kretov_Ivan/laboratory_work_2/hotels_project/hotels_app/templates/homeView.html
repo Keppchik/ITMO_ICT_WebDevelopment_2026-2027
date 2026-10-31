@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отели</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            padding: 0 0 40px;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 14px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            gap: 16px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f2937;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-form input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .search-form input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .search-form button {
+            padding: 8px 12px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s ease;
+        }
+
+        .search-form button:hover {
+            background: #5568d3;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .nav a.btn-nav,
+        .nav a.btn-reservations,
+        .nav a.btn-admin {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .nav a.btn-login { color: #4b5563; }
+        .nav a.btn-login:hover { background: #f3f4f6; }
+
+        .nav a.btn-signup {
+            background: #667eea;
+            color: #fff;
+        }
+        .nav a.btn-signup:hover { background: #5568d3; }
+
+        .nav a.btn-reservations { color: #4b5563; }
+        .nav a.btn-reservations:hover {
+            background: #f3f4f6;
+            color: #667eea;
+        }
+
+        .nav a.btn-admin {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 600;
+        }
+        .nav a.btn-admin:hover { background: #fde68a; }
+
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background 0.15s ease;
+        }
+
+        .user-block:hover { background: #f3f4f6; }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #f3f4f6;
+            color: #dc2626;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: #e5e7eb;
+            margin: 0 4px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 30px 50px 0;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .subtitle strong { color: #1f2937; }
+
+        /* ---------- Фильтр ---------- */
+        .filter-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 160px;
+        }
+
+        .filter-field label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-field select {
+            padding: 8px 36px 8px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #fff;
+            font-family: inherit;
+            cursor: pointer;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px 7px;
+        }
+
+        .filter-field select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .filter-field select:hover {
+            border-color: #9ca3af;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .btn-apply {
+            padding: 8px 18px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-apply:hover { background: #5568d3; }
+
+        .btn-reset {
+            padding: 8px 18px;
+            background: #eee;
+            color: #333;
+            border-radius: 8px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-reset:hover { background: #e0e0e0; }
+
+        /* ---------- Сетка отелей ---------- */
+        .hotels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .hotel {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hotel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(102, 126, 234, 0.18);
+        }
+
+        .hotel-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #d8dce5;
+            display: block;
+        }
+
+        .hotel-info {
+            padding: 18px 20px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hotel h2 {
+            margin: 0 0 6px;
+            font-size: 19px;
+            color: #1f2937;
+            transition: color 0.15s ease;
+        }
+
+        .hotel:hover h2 { color: #667eea; }
+
+        .hotel .address {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .hotel .description {
+            margin: 0 0 14px;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .stars {
+            margin-top: auto;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .stars .star { color: #d1d5db; }
+        .stars .star.filled { color: #f5b301; }
+
+        .empty {
+            grid-column: 1 / -1;
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .empty a { color: #667eea; text-decoration: none; }
+        .empty a:hover { text-decoration: underline; }
+
+        /* ---------- Пагинация ---------- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 36px;
+        }
+
+        .pagination a,
+        .pagination span.page-current,
+        .pagination span.page-disabled {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .pagination a {
+            background: #fff;
+            color: #4b5563;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: #fff;
+        }
+
+        .pagination span.page-current {
+            background: #667eea;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination span.page-disabled {
+            background: #f3f4f6;
+            color: #c0c4cc;
+            cursor: not-allowed;
+        }
+
+        .pagination span.page-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .topbar { padding: 14px 20px; flex-wrap: wrap; }
+            .container { padding: 22px 20px 0; }
+            .user-name { display: none; }
+            .nav { gap: 6px; flex-wrap: wrap; }
+            .nav a.btn-nav,
+            .nav a.btn-reservations,
+            .nav a.btn-admin { padding: 7px 10px; font-size: 13px; }
+            .search-form { max-width: none; order: 3; flex-basis: 100%; }
+            .filter-actions { margin-left: 0; width: 100%; }
+            .filter-actions .btn-apply,
+            .filter-actions .btn-reset { flex: 1; text-align: center; }
+        }
+
+        @media (max-width: 600px) {
+            .hotels-grid { grid-template-columns: 1fr; gap: 18px; }
+            .hotel-photo { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a class="brand" href="{% url 'home' %}">Отели</a>
+
+        <form method="get" action="{% url 'home' %}" class="search-form">
+            <input type="text" name="q" placeholder="Поиск отелей..."
+                   value="{{ query|default:'' }}" autocomplete="off">
+            {% if selected_city %}
+                <input type="hidden" name="city" value="{{ selected_city }}">
+            {% endif %}
+            {% if selected_stars %}
+                <input type="hidden" name="stars" value="{{ selected_stars }}">
+            {% endif %}
+            <button type="submit" aria-label="Найти">🔍</button>
+        </form>
+
+        <div class="nav">
+            {% if user.is_authenticated %}
+                <a href="{% url 'my_reservations' %}" class="btn-reservations">Мои бронирования</a>
+
+                {% if user.is_staff %}
+                    <a href="{% url 'all_reservations' %}" class="btn-reservations">Все бронирования</a>
+                    <a href="{% url 'monthly_guests' %}" class="btn-reservations">Постояльцы за месяц</a>
+                    <a href="/admin/" class="btn-admin">Админка</a>
+                    <div class="divider"></div>
+                {% endif %}
+
+                <a href="{% url 'profile' %}" class="user-block" title="Профиль">
+                    <div class="avatar">
+                        {% if user.first_name or user.last_name %}
+                            {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                        {% else %}
+                            {{ user.email|first|upper }}
+                        {% endif %}
+                    </div>
+                    <span class="user-name">
+                        {% if user.first_name %}
+                            {{ user.first_name }}
+                        {% else %}
+                            {{ user.email }}
+                        {% endif %}
+                    </span>
+                </a>
+                <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Выйти</button>
+                </form>
+            {% else %}
+                <a class="btn-nav btn-login" href="{% url 'login' %}">Войти</a>
+                <a class="btn-nav btn-signup" href="{% url 'signup' %}">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Отели</h1>
+            <div class="subtitle">
+                Найдено: <strong>{{ page_obj.paginator.count }}</strong>
+                {% if page_obj.has_other_pages %}
+                    · Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                {% endif %}
+                {% if query or selected_city or selected_stars %}
+                    ·
+                    {% if query %}
+                        Поиск: <strong>{{ query }}</strong>
+                    {% endif %}
+                    {% if selected_city %}
+                        {% if query %}·{% endif %}
+                        Город: <strong>{{ selected_city }}</strong>
+                    {% endif %}
+                    {% if selected_stars %}
+                        {% if query or selected_city %}·{% endif %}
+                        <strong>{{ selected_stars }} ★</strong>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="get" action="{% url 'home' %}" class="filter-form">
+            {% if query %}
+                <input type="hidden" name="q" value="{{ query }}">
+            {% endif %}
+
+            <div class="filter-field">
+                <label for="city">Город</label>
+                <select name="city" id="city">
+                    <option value="">Все города</option>
+                    {% for c in cities %}
+                        <option value="{{ c }}" {% if c == selected_city %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label for="stars">Звёзды</label>
+                <select name="stars" id="stars">
+                    <option value="">Любые</option>
+                    {% for s in "12345" %}
+                        <option value="{{ s }}" {% if s == selected_stars %}selected{% endif %}>{{ s }} ★</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-apply">Применить</button>
+                <a href="{% url 'home' %}{% if query %}?q={{ query }}{% endif %}" class="btn-reset">Сбросить</a>
+            </div>
+        </form>
+
+        <div class="hotels-grid">
+            {% for hotel in page_obj %}
+                <a class="hotel" href="{% url 'hotel_detail' hotel.pk %}">
+                    {% if hotel.photo %}
+                        <img class="hotel-photo" src="{{ hotel.photo.url }}" alt="{{ hotel.name }}">
+                    {% else %}
+                        <div class="hotel-photo"></div>
+                    {% endif %}
+
+                    <div class="hotel-info">
+                        <h2>{{ hotel.name }}</h2>
+                        <p class="address">{{ hotel.city }}, {{ hotel.address }}</p>
+                        {% if hotel.description %}
+                            <p class="description">{{ hotel.description }}</p>
+                        {% endif %}
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= hotel.stars %}
+                                    <span class="star filled">★</span>
+                                {% else %}
+                                    <span class="star">★</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="empty">
+                    По выбранным условиям отелей не найдено.<br>
+                    <a href="{% url 'home' %}">Сбросить все фильтры</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{{ query_string }}">← Назад</a>
+                {% else %}
+                    <span class="page-disabled">← Назад</span>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="page-current">{{ num }}</span>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages or num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                        <a href="?page={{ num }}{{ query_string }}">{{ num }}</a>
+                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                        <span class="page-dots">…</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{{ query_string }}">Вперёд →</a>
+                {% else %}
+                    <span class="page-disabled">Вперёд →</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

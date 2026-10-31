@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef1f6;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 35px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 24px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .field { margin-bottom: 16px; }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .errorlist {
+            color: #dc2626;
+            font-size: 12px;
+            margin: 4px 0 0;
+            padding-left: 16px;
+        }
+
+        .alert {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.15s;
+        }
+
+        .btn:hover { background: #5568d3; }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Вход</h1>
+        <div class="subtitle">Войдите, чтобы управлять бронированиями</div>
+
+        {% if form.non_field_errors %}
+            <div class="alert">
+                Неверный email или пароль.
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="field">
+                <label for="{{ form.username.id_for_label }}">Email</label>
+                <input type="email"
+                       name="{{ form.username.name }}"
+                       id="{{ form.username.id_for_label }}"
+                       value="{{ form.username.value|default:'' }}"
+                       placeholder="you@example.com"
+                       autocomplete="email"
+                       autofocus
+                       required>
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                <input type="password"
+                       name="{{ form.password.name }}"
+                       id="{{ form.password.id_for_label }}"
+                       placeholder="••••••••"
+                       autocomplete="current-password"
+                       required>
+                {% if form.password.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn">Войти</button>
+        </form>
+
+        <div class="footer">
+            Нет аккаунта? <a href="{% url 'signup' %}">Зарегистрироваться</a>
+        </div>
+    </div>
+</body>
+</html>
